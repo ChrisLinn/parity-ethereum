@@ -135,7 +135,7 @@ build_rpc_trait! {
 		// Returns storage of the given addresses (first parameter) if Fat DB is enabled (`--fat-db`),
 		// or null if not.
 		#[rpc(name = "parity_storage")]
-		fn list_storage(&self, Vec<H160>, Option<u64>, Option<H256>, Trailing<BlockNumber>) -> Result<HashMap<H160, Option<BTreeMap<H256, String>>>>;
+		fn list_storage(&self, Vec<H160>, Option<u64>, Option<H256>, Option<BlockNumber>, Trailing<H256>) -> Result<HashMap<H160, Option<BTreeMap<H256, String>>>>;
 		
 		// Returns storage of the given address (first parameter) if Fat DB is enabled (`--fat-db`),
 		// or null if not.

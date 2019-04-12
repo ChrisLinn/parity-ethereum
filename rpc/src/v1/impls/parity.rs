@@ -49,6 +49,7 @@ use v1::types::{
 	block_number_to_id
 };
 use Host;
+use ethcore::client::TransactionId;
 
 /// Parity implementation.
 pub struct ParityClient<C, M, U> {
@@ -275,14 +276,34 @@ impl<C, M, U, S> Parity for ParityClient<C, M, U> where
 			.map(|a| a.into_iter().map(Into::into).collect()))
 	}
 
-	fn list_storage(&self, addresses: Vec<H160>, count: Option<u64>, after: Option<H256>, block_number: Trailing<BlockNumber>) -> Result<HashMap<H160, Option<BTreeMap<H256, String>>>> {
+	fn list_storage(&self, addresses: Vec<H160>, count: Option<u64>, after: Option<H256>, block_number: Option<BlockNumber>, before_transaction: Trailing<H256>) -> Result<HashMap<H160, Option<BTreeMap<H256, String>>>> {
 		let mut map = HashMap::new();
-		let option_block_number:Option<BlockNumber> = block_number.into();
+		// let option_block_number:Option<BlockNumber> = block_number.into();
+
+		let before_tx = match before_transaction.unwrap_or_default() {
+			tx_hash => self.client.transaction(TransactionId::Hash(tx_hash.into()))
+		};
+
+
+// fn transaction(&self, id: TransactionId) -> Option<LocalizedTransaction> {
+// 		self.transaction_address(id).and_then(|address| self.chain.read().transaction(&address))
+// 	}
+
+
+
+		// let tx = try_bf!(self.transaction(PendingTransactionId::Hash(hash))).or_else(|| {
+		// 	self.miner.transaction(&hash)
+		// 		.map(|t| Transaction::from_pending(t.pending().clone()))
+		// });
+
+		// Box::new(future::ok(tx))
+
+
 
 		for address in addresses {
 			let address_cloned = address.clone();
 			let after_cloned = after.clone();
-			let option_block_number_cloned = option_block_number.clone();
+			let option_block_number_cloned = block_number.clone();
 			let new_block_number:Trailing<BlockNumber> = option_block_number_cloned.into();
 
 			let sub = match self.list_storage_for_address(address, count, after_cloned, new_block_number) {
